@@ -41,9 +41,32 @@ const run = async () => {
 // ** Making database and collections
 const usersCollection = client.db("loginRegistration").collection("users");
 
-// app.get('/users', async(req,res)=>{
+app.get("/users", async (req, res) => {
+  try {
+    const query = {};
 
-// })
+    const cursor = usersCollection.find();
+    const users = await cursor.toArray();
+
+    // if (!users.data) {
+    //   res.send({
+    //     success: false,
+    //     message: "No user found",
+    //   });
+    // }
+
+    res.send({
+      success: true,
+      data: users,
+      message: "User data accessed",
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 // ** registration of users
 
@@ -73,7 +96,7 @@ app.post("/registration", async (req, res) => {
     res.send({
       success: true,
       data: user,
-      message: `Successfully created ${name}`,
+      message: `Successfully created ${user.name}`,
     });
   } catch (error) {
     res.send({
@@ -81,6 +104,17 @@ app.post("/registration", async (req, res) => {
       message: error.message,
     });
   }
+});
+
+// ** user login
+
+app.post("/login", async (req, res) => {
+  try {
+    // ** get the user data from request body
+    // ** validate user email and password (email and password ase ki nai)
+    // ** Jodi email and password thake tahole sei email and password er against a db te user ase ki nai
+    // ** jodi thake tahole sei user k as response hisabe send kore dau
+  } catch (error) {}
 });
 
 // ** app listen
