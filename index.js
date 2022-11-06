@@ -106,6 +106,35 @@ app.get("/users", jwtVerify, async (req, res) => {
   }
 });
 
+// ** pagination -> 1.currentPage 2. dataPerPage
+
+app.get("/p-users", async (req, res) => {
+  try {
+    const currentPage = +req.query.currentPage || 0;
+    const dataPerPage = +req.query.dataPerPage || 2;
+
+    console.log(currentPage, dataPerPage);
+
+    const cursor = usersCollection.find({});
+    const user = await cursor
+      .skip(currentPage * dataPerPage)
+      .limit(dataPerPage)
+      .toArray();
+
+    console.log(cursor);
+
+    res.send({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // ** registration of users
 
 app.post("/registration", async (req, res) => {
@@ -131,11 +160,13 @@ app.post("/registration", async (req, res) => {
 
     const user = await usersCollection.insertOne(userDocument);
 
-    res.send({
-      success: true,
-      data: user,
-      message: `Successfully created ${user.name}`,
-    });
+    if (user.insertedId) {
+      res.send({
+        success: true,
+        data: user,
+        message: `Successfully created ${email}`,
+      });
+    }
   } catch (error) {
     res.send({
       success: false,
